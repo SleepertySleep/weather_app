@@ -32,22 +32,29 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   String getWeatherAnima(String? condition) {
-    if (condition == null) return 'no condition';
+    // if (condition == null) return 'no condition';
 
-    switch (condition.toLowerCase()) {
+    switch (condition?.toLowerCase()) {
       case 'clouds':
+        return 'assets/cloud.json';
       case 'mist':
+        return 'assets/mist.json';
       case 'smoke':
+        return 'assets/mist.json';
       case 'haze':
+        return 'assets/mist.json';
       case 'dust':
+        return 'assets/sun.json';
       case 'fog':
         return 'assets/cloud.json';
       case 'rain':
+        return 'assets/sun_rain.json';
       case 'drizzle':
+        return 'assets/sun_rain.json';
       case 'shower rain':
         return 'assets/sun_rain.json';
-      case 'tunderstorm':
-        return 'assets/tunder.json';
+      case 'thunderstorm':
+        return 'assets/thunder.json';
       case 'clear':
         return 'assets/sun.json';
       default:
