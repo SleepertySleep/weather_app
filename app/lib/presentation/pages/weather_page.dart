@@ -1,8 +1,12 @@
-import 'package:app/services/weather_service.dart';
+import 'package:app/presentation/services/weather_service.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:app/domain/models/weather_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:app/presentation/bloc/weather_bloc.dart';
+import 'package:app/presentation/bloc/weather_event.dart';
+import 'package:app/presentation/bloc/weather_state.dart';
 
-import '../models/weather_model.dart';
 
 class WeatherPage extends StatefulWidget {
   const WeatherPage({super.key});
@@ -65,24 +69,36 @@ class _WeatherPageState extends State<WeatherPage> {
   @override
   void initState() {
     super.initState();
-
     _fetchWeather();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(_weather?.city ?? 'loading...'),
+      body: BlocProvider(
+        create: (context) => WeatherBloc(WeatherService('3a58d44585eb08ad43193f290d24974f'))
+          ..add(FetchCurrentLocationWeatherEvent()),
+        child: BlocBuilder<WeatherBloc, WeatherState>(
+          builder: (context, state) {
+            if (state is WeatherLoading) {
+              return Center(child: CircularProgressIndicator());
+            } else if (state is WeatherLoaded) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(state.weather.city),
+                  Lottie.asset(getWeatherAnima(state.weather.condition)),
+                  Text('${state.weather.temperature.round()}°C'),
+                  Text(state.weather.condition ?? ''),
+                ],
+              );
+            } else if (state is WeatherError) {
+              return Center(child: Text(state.message));
+            }
 
-          Lottie.asset(getWeatherAnima(_weather?.condition)),
-
-          Text('${_weather?.temperature.round()}°C'),
-
-          Text(_weather?.condition ?? ''),
-        ],
+            return Center(child: Text('Please wait...'));
+          },
+        ),
       ),
     );
   }
